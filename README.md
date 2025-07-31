@@ -26,16 +26,28 @@ Fast MCP solves all these problems by providing a clean, Ruby-focused implementa
 
 ## ✨ Features
 
-- 🛠️ **Tools API** - Let AI models call your Ruby functions securely, with in-depth argument validation through [Dry-Schema](https://github.com/dry-rb/dry-schema).
-- 📚 **Resources API** - Share data between your app and AI models
-- 🔄 **Multiple Transports** - Choose from STDIO, HTTP, or SSE based on your needs
-- 🧩 **Framework Integration** - Works seamlessly with Rails, Sinatra or any Rack app.
-- 🔒 **Authentication Support** - Secure your AI-powered endpoints with ease
-- 🚀 **Real-time Updates** - Subscribe to changes for interactive applications
-- 🎯 **Dynamic Filtering** - Control tool/resource access based on request context (permissions, API versions, etc.)
+### Core MCP Features
 
+- 🛠️ **Tools API** - Let AI models call your Ruby functions securely, with in-depth argument validation through [Dry-Schema](https://github.com/dry-rb/dry-schema)
+- 📚 **Resources API** - Share data between your app and AI models with URI templating
+- 🔄 **Multiple Transports** - Choose from STDIO, HTTP, or SSE based on your needs
+- 🧩 **Framework Integration** - Works seamlessly with Rails, Sinatra or any Rack app
+- 🚀 **Real-time Updates** - Subscribe to changes for interactive applications
+- 🎯 **Dynamic Filtering** - Control tool/resource access based on request context
+
+### 🔐 OAuth 2.1 Resource Server (NEW!)
+
+- 🛡️ **OAuth 2.1 Resource Server** - RFC compliant token validation and resource protection
+- 🎯 **Audience Binding** - Prevents confused deputy attacks (RFC 8707)
+- 📍 **Protected Resource Metadata** - RFC 9728 compliant discovery endpoint
+- 🔍 **Token Validation** - Local JWT and opaque token validation
+- 🏷️ **Scope-based Authorization** - Fine-grained access control for MCP operations
+- 📊 **JWT + Opaque Tokens** - Support for both token types with JWKS validation
+- ⚡ **Enhanced Error Responses** - WWW-Authenticate headers with resource metadata URLs
+- 🔒 **HTTPS Enforcement** - Production-ready security with localhost development support
 
 ## 💎 What Makes FastMCP Great
+
 ```ruby
 # Define tools for AI models to use
 server = FastMcp::Server.new(name: 'popular-users', version: '1.0.0')
@@ -109,7 +121,7 @@ Control which tools and resources are available based on request context:
 class AdminTool < FastMcp::Tool
   tags :admin, :dangerous
   description "Perform admin operations"
-  
+
   def call
     # Admin only functionality
   end
@@ -118,7 +130,7 @@ end
 # Filter tools based on user permissions
 server.filter_tools do |request, tools|
   user_role = request.params['role']
-  
+
   case user_role
   when 'admin'
     tools # Admins see all tools
@@ -131,6 +143,7 @@ end
 ```
 
 ### 🚂 Fast Ruby on Rails implementation
+
 ```shell
 bundle add fast-mcp
 bin/rails generate fast_mcp:install
@@ -168,7 +181,9 @@ FastMcp.mount_in_rails(
   end
 end
 ```
+
 The install script will also:
+
 - add app/resources folder
 - add app/tools folder
 - add app/tools/sample_tool.rb
@@ -220,6 +235,7 @@ end
 ```
 
 ### Easy Sinatra setup
+
 I'll let you check out the dedicated [sinatra integration docs](./docs/sinatra_integration.md).
 
 ## 🚀 Quick Start
@@ -282,17 +298,21 @@ Clone this project, then give it a go !
 ```shell
 npx @modelcontextprotocol/inspector examples/server_with_stdio_transport.rb
 ```
+
 Or to test with an SSE transport using a rack middleware:
+
 ```shell
 npx @modelcontextprotocol/inspector examples/rack_middleware.rb
 ```
 
 Or to test over SSE with an authenticated rack middleware:
+
 ```shell
 npx @modelcontextprotocol/inspector examples/authenticated_rack_middleware.rb
 ```
 
 You can test your custom implementation with the official MCP inspector by using:
+
 ```shell
 # Test with a stdio transport:
 npx @modelcontextprotocol/inspector path/to/your_ruby_file.rb
@@ -321,6 +341,7 @@ end
 ### Integrating with Claude Desktop
 
 Add your server to your Claude Desktop configuration at:
+
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
@@ -329,28 +350,27 @@ Add your server to your Claude Desktop configuration at:
   "mcpServers": {
     "my-great-server": {
       "command": "ruby",
-      "args": [
-        "/Users/path/to/your/awesome/fast-mcp/server.rb"
-      ]
+      "args": ["/Users/path/to/your/awesome/fast-mcp/server.rb"]
     }
   }
 }
 ```
 
 ## How to add a MCP server to Claude, Cursor, or other MCP clients?
+
 Please refer to [configuring_mcp_clients](docs/configuring_mcp_clients.md)
 
 ## 📊 Supported Specifications
 
-| Feature | Status |
-|---------|--------|
-| ✅ **JSON-RPC 2.0** | Full implementation for communication |
-| ✅ **Tool Definition & Calling** | Define and call tools with rich argument types |
-| ✅ **Resource & Resource Templates Management** | Create, read, update, and subscribe to resources |
-| ✅ **Transport Options** | STDIO, HTTP, and SSE for flexible integration |
-| ✅ **Framework Integration** | Rails, Sinatra, Hanami, and any Rack-compatible framework |
-| ✅ **Authentication** | Secure your AI endpoints with token authentication |
-| ✅ **Schema Support** | Full JSON Schema for tool arguments with validation |
+| Feature                                         | Status                                                    |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| ✅ **JSON-RPC 2.0**                             | Full implementation for communication                     |
+| ✅ **Tool Definition & Calling**                | Define and call tools with rich argument types            |
+| ✅ **Resource & Resource Templates Management** | Create, read, update, and subscribe to resources          |
+| ✅ **Transport Options**                        | STDIO, HTTP, and SSE for flexible integration             |
+| ✅ **Framework Integration**                    | Rails, Sinatra, Hanami, and any Rack-compatible framework |
+| ✅ **Authentication**                           | Secure your AI endpoints with token authentication        |
+| ✅ **Schema Support**                           | Full JSON Schema for tool arguments with validation       |
 
 ## 🗺️ Use Cases
 
@@ -390,6 +410,95 @@ FastMcp.authenticated_rack_middleware(app,
 )
 ```
 
+## 🔐 OAuth 2.1 Integration
+
+Fast MCP includes production-ready OAuth 2.1 support with modern security features:
+
+### 🚀 Quick OAuth Setup
+
+```ruby
+# OAuth-protected MCP server
+transport = FastMcp::Transports::OAuthStreamableHttpTransport.new(
+  app, mcp_server,
+
+  # OAuth Resource Server Configuration
+  oauth_enabled: true,
+  require_https: true, # Enforced in production
+  resource_identifier: 'https://your-api.com/mcp', # Must match token audience
+
+  # Authorization Servers (for RFC 9728 metadata endpoint)
+  authorization_servers: [
+    'https://your-auth-server.com'
+  ],
+
+  # Token Validation (choose one)
+
+  # Option 1: JWT tokens with JWKS
+  jwks_uri: 'https://your-auth-server.com/.well-known/jwks.json',
+  audience: 'https://your-api.com/mcp',
+
+  # Option 2: Opaque tokens with custom validator
+  opaque_token_validator: lambda do |token|
+    user = User.find_by(api_token: token)
+    {
+      valid: user&.active?,
+      scopes: user&.mcp_scopes || [],
+      subject: user&.id
+    }
+  end,
+
+  # Scope Configuration
+  tools_scope: 'mcp:tools',      # Required to execute tools
+  resources_scope: 'mcp:resources', # Required to read resources
+  admin_scope: 'mcp:admin',      # Required for admin operations
+
+  # Security Features
+  resource_identifier: 'https://your-api.com/mcp' # Audience binding
+)
+```
+
+### 🏗️ Rails OAuth Integration
+
+```ruby
+# config/initializers/fast_mcp.rb
+FastMcp.mount_in_rails(
+  Rails.application,
+  transport: :oauth,
+
+  # OAuth Resource Server Configuration
+  oauth_enabled: true,
+  require_https: Rails.env.production?,
+  resource_identifier: ENV['MCP_RESOURCE_IDENTIFIER'],
+  authorization_servers: ENV['OAUTH_AUTHORIZATION_SERVERS'].split(','),
+
+  # JWT Token Validation
+  jwks_uri: ENV['OAUTH_JWKS_URI'],
+  audience: ENV['MCP_JWT_AUDIENCE'],
+
+  # Scope-based Authorization
+  tools_scope: 'mcp:tools',
+  resources_scope: 'mcp:resources',
+  admin_scope: 'mcp:admin'
+)
+```
+
+### 🔒 Security Features
+
+- **✅ Protected Resource Metadata** - RFC 9728 compliant discovery endpoint (`/.well-known/oauth-protected-resource`)
+- **✅ Audience Binding** - Prevents confused deputy attacks (RFC 8707)
+- **✅ JWT + JWKS** - Full signature validation with key rotation
+- **✅ Token Validation** - Local JWT and opaque token validation
+- **✅ Enhanced Error Responses** - WWW-Authenticate headers with resource metadata URLs
+- **✅ HTTPS Enforcement** - Production security with development flexibility
+
+### 📚 OAuth Documentation
+
+- [🛡️ OAuth 2.1 Resource Server Guide](docs/oauth-resource-server.md) - Complete implementation guide
+- [🔧 OAuth Configuration Guide](docs/oauth-configuration-guide.md) - Setup and configuration
+- [🔍 OAuth Troubleshooting](docs/oauth-troubleshooting.md) - Debug common issues
+- [🚀 OAuth Server Example](examples/server_with_oauth_transport.rb) - Production-ready server
+- [🚂 Rails OAuth Integration](examples/rails_oauth_integration.rb) - Rails-specific examples
+
 ## 📖 Documentation
 
 - [🚀 Getting Started Guide](docs/getting_started.md)
@@ -406,12 +515,19 @@ FastMcp.authenticated_rack_middleware(app,
 Check out the [examples directory](examples) for more detailed examples:
 
 - **🔨 Basic Examples**:
+
   - [Simple Server](examples/server_with_stdio_transport.rb)
   - [Tool Examples](examples/tool_examples.rb)
 
 - **🌐 Web Integration**:
+
   - [Rack Middleware](examples/rack_middleware.rb)
   - [Authenticated Endpoints](examples/authenticated_rack_middleware.rb)
+
+- **🔐 OAuth 2.1 Security**:
+  - [OAuth Server](examples/server_with_oauth_transport.rb) - Production-ready OAuth 2.1 server
+  - [OAuth Client](examples/oauth_client_example.rb) - Complete OAuth 2.1 client flow
+  - [Rails Integration](examples/rails_oauth_integration.rb) - Rails-specific OAuth setup
 
 ## 🧪 Requirements
 
@@ -438,3 +554,247 @@ This project is available as open source under the terms of the [MIT License](ht
 - The [Model Context Protocol](https://github.com/modelcontextprotocol) team for creating the specification
 - The [Dry-Schema](https://github.com/dry-rb/dry-schema) team for the argument validation.
 - All contributors to this project
+
+# Fast MCP
+
+A Ruby implementation of the Model Context Protocol (MCP) with multiple transport options and Rails integration.
+
+## Features
+
+- **Multiple Transport Options**: Support for StreamableHTTP, OAuth 2.1, and legacy transports
+- **Rails Integration**: Seamless integration with Rails applications
+- **Tool & Resource Management**: Easy definition and registration of MCP tools and resources
+- **Security**: Built-in security features including origin validation and authentication
+- **Flexible Configuration**: Extensive configuration options for different deployment scenarios
+
+## Installation
+
+### Rails 7.0.8.7 Compatibility
+
+This gem is fully compatible with Rails 7.0.8.7. To use it in your Rails 7 application:
+
+```ruby
+# In your Gemfile
+gem 'fast-mcp', '~> 1.5.0'
+```
+
+Then run:
+```bash
+bundle install
+```
+
+### Rails 8+ Compatibility
+
+For Rails 8+ applications, the gem works out of the box with the same installation method.
+
+## Quick Start
+
+### 1. Install the gem
+
+```bash
+rails generate fast_mcp:install
+```
+
+This will:
+- Add the gem to your Gemfile
+- Create the initializer file
+- Generate base classes for tools and resources
+
+### 2. Create your first tool
+
+```ruby
+# app/tools/hello_tool.rb
+class HelloTool < ApplicationTool
+  def self.name
+    'hello'
+  end
+
+  def self.description
+    'A simple hello world tool'
+  end
+
+  def self.input_schema
+    {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+          description: 'The name to greet'
+        }
+      },
+      required: ['name']
+    }
+  end
+
+  def call(input)
+    name = input['name']
+    { message: "Hello, #{name}!" }
+  end
+end
+```
+
+### 3. Create your first resource
+
+```ruby
+# app/resources/user_resource.rb
+class UserResource < ApplicationResource
+  def self.name
+    'user'
+  end
+
+  def self.description
+    'User information resource'
+  end
+
+  def self.schema
+    {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        email: { type: 'string' }
+      }
+    }
+  end
+
+  def self.uri_scheme
+    'user'
+  end
+
+  def self.get(uri)
+    user_id = uri.split('/').last
+    user = User.find(user_id)
+    
+    {
+      contents: [{
+        uri: uri,
+        mime_type: 'application/json',
+        text: user.to_json
+      }]
+    }
+  end
+end
+```
+
+### 4. Start your server
+
+```bash
+rails server
+```
+
+Your MCP server will be available at `/mcp` (or the path you configured).
+
+## Configuration
+
+The gem is configured through the initializer file created during installation. Here are the main configuration options:
+
+### Basic Configuration
+
+```ruby
+# config/initializers/fast_mcp.rb
+FastMcp.mount_in_rails(
+  Rails.application,
+  name: 'my-app',
+  version: '1.0.0',
+  path: '/mcp'
+) do |server|
+  # Your server configuration here
+end
+```
+
+### Authentication Options
+
+#### No Authentication (Development)
+```ruby
+# Default configuration - no authentication required
+```
+
+#### Token Authentication
+```ruby
+FastMcp.mount_in_rails(
+  Rails.application,
+  transport: :authenticated,
+  auth_token: Rails.application.credentials.mcp_token
+)
+```
+
+#### OAuth 2.1 (Production Recommended)
+```ruby
+FastMcp.mount_in_rails(
+  Rails.application,
+  transport: :oauth,
+  oauth_enabled: true,
+  opaque_token_validator: method(:validate_oauth_token)
+)
+```
+
+### Security Settings
+
+```ruby
+FastMcp.mount_in_rails(
+  Rails.application,
+  require_https: Rails.env.production?,
+  localhost_only: Rails.env.local?,
+  allowed_origins: ['localhost', 'example.com'],
+  allowed_ips: ['127.0.0.1', '::1']
+)
+```
+
+## Transport Types
+
+### StreamableHTTP (Recommended)
+Modern transport compliant with MCP 2025-06-18 specification:
+```ruby
+transport: :streamable_http
+```
+
+### OAuth 2.1
+For production applications with OAuth integration:
+```ruby
+transport: :oauth
+```
+
+### Authenticated
+Simple token-based authentication:
+```ruby
+transport: :authenticated
+```
+
+### Legacy (Deprecated)
+Legacy transport for migration purposes:
+```ruby
+transport: :legacy
+```
+
+## Development
+
+### Running Tests
+
+```bash
+bundle exec rspec
+```
+
+### Code Quality
+
+```bash
+bundle exec rubocop
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for your changes
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and questions:
+- Check the [documentation](docs/)
+- Open an issue on GitHub
+- Review the [examples](examples/) directory

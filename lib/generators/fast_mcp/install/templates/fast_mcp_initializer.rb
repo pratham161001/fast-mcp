@@ -18,16 +18,15 @@ FastMcp.mount_in_rails(
   Rails.application,
   name: Rails.application.class.module_parent_name.underscore.dasherize,
   version: '1.0.0',
-  path_prefix: '/mcp', # This is the default path prefix
-  messages_route: 'messages', # This is the default route for the messages endpoint
-  sse_route: 'sse' # This is the default route for the SSE endpoint
+  path: '/mcp', # Modern StreamableHTTP transport path
+  # Legacy transport options (deprecated, use path above instead):
+  # path_prefix: '/mcp', # This is the default path prefix
+  # messages_route: 'messages', # This is the default route for the messages endpoint
+  # sse_route: 'sse' # This is the default route for the SSE endpoint
   # Add allowed origins below, it defaults to Rails.application.config.hosts
-  # allowed_origins: ['localhost', '127.0.0.1', '[::1]', 'example.com', /.*\.example\.com/],
-  # localhost_only: true, # Set to false to allow connections from other hosts
-  # whitelist specific ips to if you want to run on localhost and allow connections from other IPs
-  # allowed_ips: ['127.0.0.1', '::1']
+  # allowed_origins: ['localhost', '127.0.0.1', 'example.com', /.*\.example\.com/],
   # authenticate: true,       # Uncomment to enable authentication
-  # auth_token: 'your-token', # Required if authenticate: true
+  # auth_token: 'your-token' # Required if authenticate: true
 ) do |server|
   Rails.application.config.after_initialize do
     # FastMcp will automatically discover and register:
